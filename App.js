@@ -1,7 +1,6 @@
 import React from 'react'
 import AddressForm from './AddressForm.js'
 import Timeline from './Timeline'
-import jquery from 'jquery'
 import $ from 'jquery'
 
 class App extends React.Component {
@@ -182,15 +181,19 @@ class App extends React.Component {
           const yays = allBills.map(bill => bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE)
           const yaysArray = yays.map(votes => votes ? votes : { size: 0 })
 
-          var senatorVotes = allBills.map(bill => {
-            if (bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE && bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE.items.filter(senator => senator.fullName === this.state.senatorInfo.fullName || senator.fullName === this.state.senatorInfo.firstLast || senator.fullName.split(' ')[senator.fullName.split(' ').length - 1] === this.state.senatorInfo.short).length > 0) { return 'yay' } else if (bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.NAY && bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.NAY.items.filter(senator => senator.fullName === this.state.senatorInfo.fullName || senator.fullName === this.state.senatorInfo.firstLast || senator.fullName.split(' ')[senator.fullName.split(' ').length - 1] === this.state.senatorInfo.short).length > 0) { return 'nay' } else { return 'n/a' }
+          const senatorVotes = allBills.map(bill => {
+            if (bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE && bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE.items.filter(senator => senator.fullName === this.state.senatorInfo.fullName || senator.fullName === this.state.senatorInfo.firstLast || senator.fullName.split(' ')[senator.fullName.split(' ').length - 1] === this.state.senatorInfo.short).length > 0) {
+              return 'yay'
+            } else if (bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.NAY && bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.NAY.items.filter(senator => senator.fullName === this.state.senatorInfo.fullName || senator.fullName === this.state.senatorInfo.firstLast || senator.fullName.split(' ')[senator.fullName.split(' ').length - 1] === this.state.senatorInfo.short).length > 0) {
+              return 'nay'
+            } else {
+              return 'n/a'
+            }
           })
 
-          var billSponsors = allBills.map(bill => {
-            if (bill.result.sponsor.member !== null) { return bill.result.sponsor.member.fullName } else { return 'n/a' }
-          })
+          const billSponsors = allBills.map(bill => bill.result.sponsor.member !== null ? bill.result.sponsor.member.fullName : 'n/a')
 
-          var cleanBills = allBills.map((bill, i) => {
+          const cleanBills = allBills.map((bill, i) => {
             return {
               title: bill.result.title,
               year: bill.result.year,
@@ -210,15 +213,18 @@ class App extends React.Component {
 
         allCleanBills.sort(this.compare)
 
-        var closeVoteBills = allCleanBills.filter(bill => (Math.abs(bill.yay - bill.nay) < 20) && (bill.yay + bill.nay > 30))
+        const closeVoteBills = allCleanBills.filter(bill => (Math.abs(bill.yay - bill.nay) < 20) && (bill.yay + bill.nay > 30))
 
-        this.setState({showLoading: false, showForm: true, showLoadingLine: false})
+        this.setState({
+          showLoading: false,
+          showForm: true,
+          showLoadingLine: false
+        })
         this.setState({
           currentBills: closeVoteBills
         })
-        var billsStateVar = this.state.bills
+        const billsStateVar = this.state.bills
         billsStateVar[this.state.year.billYear] = allCleanBills
-          // billsStateVar[this.state.year.billYear] = closeVoteBills;
         $.fn.fullpage.moveSlideRight()
         this.setState({
           bills: billsStateVar
@@ -233,7 +239,7 @@ class App extends React.Component {
 
   closeBillsClicked () {
     if (this.state.senatorInfo.fullName) {
-      var closeVoteBills = this.state.bills[this.state.year.billYear].filter(bill => (Math.abs(bill.yay - bill.nay) < 20) && (bill.yay + bill.nay > 30))
+      const closeVoteBills = this.state.bills[this.state.year.billYear].filter(bill => (Math.abs(bill.yay - bill.nay) < 20) && (bill.yay + bill.nay > 30))
 
       this.setState({
         currentBills: closeVoteBills,
@@ -242,12 +248,14 @@ class App extends React.Component {
         sponsoredClicked: false,
         keywordClicked: false
       })
-    } else { return null }
+    } else {
+      return null
+    }
   }
 
   sponsoredClicked () {
     if (this.state.senatorInfo.fullName) {
-      var senatorSponsoredBills = this.state.bills[this.state.year.billYear].filter(bill => bill.sponsor === this.state.senatorInfo.firstLast || bill.sponsor === this.state.senatorInfo.fullName || bill.sponsor.includes(this.state.senatorInfo.short))
+      const senatorSponsoredBills = this.state.bills[this.state.year.billYear].filter(bill => bill.sponsor === this.state.senatorInfo.firstLast || bill.sponsor === this.state.senatorInfo.fullName || bill.sponsor.includes(this.state.senatorInfo.short))
 
       this.setState({
         currentBills: senatorSponsoredBills,
@@ -256,13 +264,15 @@ class App extends React.Component {
         yearClicked: false,
         keywordClicked: false
       })
-    } else { return null }
+    } else {
+      return null
+    }
   }
 
   keywordSearch (event) {
     event.preventDefault()
-    var searchTerm = this.refs.keywordBox.value
-    var keywordSearchBills = this.state.bills[this.state.year.billYear].filter(bill => bill.summary.includes(searchTerm))
+    const searchTerm = this.refs.keywordBox.value
+    const keywordSearchBills = this.state.bills[this.state.year.billYear].filter(bill => bill.summary.includes(searchTerm))
     this.setState({
       currentBills: keywordSearchBills,
       showKeywordSearchForm: false
@@ -276,40 +286,16 @@ class App extends React.Component {
   }
 
   render () {
-    if (this.state.closeVoteClicked) {
-      var closeVoteClickedClass = ' clickedOn'
-    } else {
-      var closeVoteClickedClass = ''
-    }
-
-    if (this.state.sponsoredClicked) {
-      var sponsoredClickedClass = ' clickedOn'
-    } else {
-      var sponsoredClickedClass = ''
-    }
-
-    if (this.state.yearClicked) {
-      var yearClickedClass = ' clickedOn'
-    } else {
-      var yearClickedClass = ''
-    }
-
-    if (this.state.keywordClicked) {
-      var keywordClickedClass = ' clickedOn'
-    } else {
-      var keywordClickedClass = ''
-    }
-
-    if (this.state.showLoadingLine) {
-      var loadingText = 'Fetching bill info...'
-    } else {
-      var loadingText = ''
-    }
-
+    const closeVoteClickedClass = this.state.closeVoteClicked ? ' clickedOn' : ''
+    const sponsoredClickedClass = this.state.sponsoredClicked ? ' clickedOn' : ''
+    const yearClickedClass = this.state.yearClicked ? ' clickedOn' : ''
+    const keywordClickedClass = this.state.keywordClicked ? ' clickedOn' : ''
+    const loadingText = this.state.showLoadingLine ? 'Fetching bill info...' : ''
+    let timelineFilters
     if (this.state.showKeywordSearchForm) {
-      var timelineFilters = <div className='row' id='keywordDiv'><form className='keyword-search' id='keyword-search-form' type='button' onSubmit={this.keywordSearch}><div className='keyword-search-box input-field col s9'><label htmlFor='keywordBox'>Search for bills by keyword</label><input ref='keywordBox' name='keywordBox' id='keywordBox' type='text' /></div><div className='col s3 waves-effect waves-light btn' id='supaDupaButton'><input type='submit' value='search' /></div></form></div>
+      timelineFilters = <div className='row' id='keywordDiv'><form className='keyword-search' id='keyword-search-form' type='button' onSubmit={this.keywordSearch}><div className='keyword-search-box input-field col s9'><label htmlFor='keywordBox'>Search for bills by keyword</label><input ref='keywordBox' name='keywordBox' id='keywordBox' type='text' /></div><div className='col s3 waves-effect waves-light btn' id='supaDupaButton'><input type='submit' value='search' /></div></form></div>
     } else {
-      var timelineFilters =
+      timelineFilters =
         <ul className='row'>
           <li className='col s3'>
             <a id='closeVoteButton' className={'waves-effect waves-light btn' + closeVoteClickedClass} onClick={this.closeBillsClicked}>close vote bills</a>
