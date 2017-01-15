@@ -1,13 +1,8 @@
 import React from 'react'
 import AddressForm from './AddressForm.js'
-import RepInfoDisplay from './RepInfoDisplay'
 import Timeline from './Timeline'
-import Bill from './Bill'
 import jquery from 'jquery'
 import $ from 'jquery'
-import setupListeners from './timeline_fcns'
-import Loading from './Loading.js'
-import jQueryify from './custom_jquery.js'
 
 class App extends React.Component {
   constructor () {
