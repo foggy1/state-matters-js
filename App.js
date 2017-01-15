@@ -1,28 +1,27 @@
-import React from 'react';
-import AddressForm from './AddressForm.js';
-import RepInfoDisplay from './RepInfoDisplay';
-import Timeline from './Timeline';
-import Bill from './Bill';
-import jquery from "jquery";
-import $ from "jquery";
-import setupListeners from './timeline_fcns';
-import Loading from './Loading.js';
-import jQueryify from './custom_jquery.js';
-
+import React from 'react'
+import AddressForm from './AddressForm.js'
+import RepInfoDisplay from './RepInfoDisplay'
+import Timeline from './Timeline'
+import Bill from './Bill'
+import jquery from 'jquery'
+import $ from 'jquery'
+import setupListeners from './timeline_fcns'
+import Loading from './Loading.js'
+import jQueryify from './custom_jquery.js'
 
 class App extends React.Component {
-  constructor() {
-    super();
-    this.geocodeIt = this.geocodeIt.bind(this);
-    this.compare = this.compare.bind(this);
+  constructor () {
+    super()
+    this.geocodeIt = this.geocodeIt.bind(this)
+    this.compare = this.compare.bind(this)
     // this.getBills = this.getBills.bind(this);
-    this.getBillTotal = this.getBillTotal.bind(this);
-    this.closeBillsClicked = this.closeBillsClicked.bind(this);
-    this.sponsoredClicked = this.sponsoredClicked.bind(this);
-    this.keywordSearch = this.keywordSearch.bind(this);
-    this.yearChange = this.yearChange.bind(this);
-    this.showKeywordForm = this.showKeywordForm.bind(this);
-    this.senatorChange = this.senatorChange.bind(this);
+    this.getBillTotal = this.getBillTotal.bind(this)
+    this.closeBillsClicked = this.closeBillsClicked.bind(this)
+    this.sponsoredClicked = this.sponsoredClicked.bind(this)
+    this.keywordSearch = this.keywordSearch.bind(this)
+    this.yearChange = this.yearChange.bind(this)
+    this.showKeywordForm = this.showKeywordForm.bind(this)
+    this.senatorChange = this.senatorChange.bind(this)
     this.state = {
       // senatorInfo: {},
       senatorInfo: {},
@@ -41,7 +40,7 @@ class App extends React.Component {
     }
   }
 
-  geocodeIt(fullAddress){
+  geocodeIt (fullAddress) {
     this.setState({showLoading: true, showForm: false, showLoadingLine: true})
     $.ajax({
       url: 'https://www.googleapis.com/civicinfo/v2/representatives/?key=AIzaSyAiRgU_ysVxPfbMqVQnOEeN4-aLW4OMEw4&roles=legislatorUpperBody&address=' + fullAddress
@@ -49,22 +48,22 @@ class App extends React.Component {
     .done(response => {
       var name = response.officials[2].name
       var district = []
-      for (var key in response.divisions) {if (response.divisions[key].name.includes("New York State Senate district")) {district.push(response.divisions[key].name)}}
+      for (var key in response.divisions) { if (response.divisions[key].name.includes('New York State Senate district')) { district.push(response.divisions[key].name) } }
       var districtStr = district.toString()
-      var districtNum = districtStr.slice(districtStr.length-2, districtStr.length)
-      var senatorFirstLastSplit = name.split(" ");
+      var districtNum = districtStr.slice(districtStr.length - 2, districtStr.length)
+      var senatorFirstLastSplit = name.split(' ')
       if (senatorFirstLastSplit.length > 2) {
-        var senatorFirstLast = senatorFirstLastSplit[0] + " " + senatorFirstLastSplit[2];
+        var senatorFirstLast = senatorFirstLastSplit[0] + ' ' + senatorFirstLastSplit[2]
       }
       var repObj = {
-          district: districtNum,
-          fullName: name,
-          firstLast: senatorFirstLast || name,
-          short: senatorFirstLastSplit[2] || senatorFirstLastSplit[1],
-          web: response.officials[2].urls[0]
+        district: districtNum,
+        fullName: name,
+        firstLast: senatorFirstLast || name,
+        short: senatorFirstLastSplit[2] || senatorFirstLastSplit[1],
+        web: response.officials[2].urls[0]
       }
       this.setState({senatorInfo: repObj})
-      this.getBillTotal();
+      this.getBillTotal()
     })
   }
 
@@ -92,7 +91,6 @@ class App extends React.Component {
   //     // save district to its own state
   //     // retrieve later when non-default year is specified
   //     this.getBillTotal();
-
 
   //   }.bind(this))
   //   .fail(function(response) {
@@ -125,132 +123,127 @@ class App extends React.Component {
   //   });
   // }
 
-  senatorChange(chosenBillYear, chosenSessionYear){
-
+  senatorChange (chosenBillYear, chosenSessionYear) {
     if (!this.state.bills[chosenBillYear]) {
-      $.fn.fullpage.moveSlideLeft();
-      this.setState({showLoading: true, showForm: false});
+      $.fn.fullpage.moveSlideLeft()
+      this.setState({showLoading: true, showForm: false})
     }
 
-    var district = this.state.senatorInfo.district;
+    var district = this.state.senatorInfo.district
     $.ajax({
-      url: "http://legislation.nysenate.gov/api/3/members/search?term=districtCode:" + district +" AND chamber:'SENATE' AND sessionYear:" + chosenSessionYear + "&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&full=true",
-      method: "GET"
+      url: 'http://legislation.nysenate.gov/api/3/members/search?term=districtCode:' + district + " AND chamber:'SENATE' AND sessionYear:" + chosenSessionYear + '&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&full=true',
+      method: 'GET'
     })
-    .done(function(response) {
-
-      var senatorName = response.result.items[0].fullName;
-      var districtCode = response.result.items[0].districtCode;
-      var splitName = senatorName.split(" ")
+    .done(function (response) {
+      var senatorName = response.result.items[0].fullName
+      var districtCode = response.result.items[0].districtCode
+      var splitName = senatorName.split(' ')
       if (splitName.length > 2) {
-        var formattedName = splitName[0] + "-" + splitName[1][0] + "-" + splitName[2]        
+        var formattedName = splitName[0] + '-' + splitName[1][0] + '-' + splitName[2]
         var lastName = splitName[2]
-      } else { var formattedName = splitName[0] + "-" + splitName[1]
-               var lastName = splitName[1]}
-      
-      if (this.state.senatorInfo.short !== lastName)
-      this.setState({
-        senatorInfo: { fullName: senatorName, district: districtCode, web: "https://www.nysenate.gov/senators/" +  formattedName}
-      })
+      } else {
+        var formattedName = splitName[0] + '-' + splitName[1]
+        var lastName = splitName[1]
+      }
 
+      if (this.state.senatorInfo.short !== lastName) {
+        this.setState({
+          senatorInfo: { fullName: senatorName, district: districtCode, web: 'https://www.nysenate.gov/senators/' + formattedName}
+        })
+      }
 
       if (this.state.bills[this.state.year.billYear]) {
-        var cleanCloserVoteBills = this.state.bills[this.state.year.billYear].filter(bill => Math.abs(bill.yay - bill.nay) < 20);
+        var cleanCloserVoteBills = this.state.bills[this.state.year.billYear].filter(bill => Math.abs(bill.yay - bill.nay) < 20)
         this.setState({ currentBills: cleanCloserVoteBills })
-      }
-      else { this.getBillTotal(); }
+      } else { this.getBillTotal() }
       // else { this.getBills(); }
-
     }.bind(this))
   }
 
-  yearChange(event){
+  yearChange (event) {
     if (this.state.senatorInfo.fullName) {
-      var chosenYear = event.target.value;
-      var chosenBillYear = parseInt(chosenYear);
+      var chosenYear = event.target.value
+      var chosenBillYear = parseInt(chosenYear)
 
-      if (chosenBillYear % 2 === 0) { var chosenSessionYear = chosenBillYear - 1 }
-      else { var chosenSessionYear = chosenBillYear }
+      if (chosenBillYear % 2 === 0) { var chosenSessionYear = chosenBillYear - 1 } else { var chosenSessionYear = chosenBillYear }
 
       this.setState({
         year: { billYear: chosenBillYear, sessionYear: chosenSessionYear}, closeVoteClicked: false, sponsoredClicked: false, yearClicked: true, keywordClicked: false, showLoadingLine: true
-      });
+      })
 
       this.senatorChange(chosenBillYear, chosenSessionYear)
+    } else { return null }
+  }
+
+  compare (a, b) {
+    if (a.date < b.date) {
+      return 1
     }
-    else { return null }
+    if (a.date > b.date) {
+      return -1
+    }
+    return 0
   }
 
-  compare(a, b) {
-    if (a.date < b.date)
-      return 1;
-    if (a.date> b.date)
-      return -1;
-    return 0;
-  }
-
-  getBillTotal() {
+  getBillTotal () {
     $.ajax({
-      url: "http://legislation.nysenate.gov/api/3/bills/" + this.state.year.sessionYear +"/search?term=%5C*voteType:'FLOOR'%20AND%20year:" + this.state.year.billYear + "&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&limit=1",
-      method: "GET"
+      url: 'http://legislation.nysenate.gov/api/3/bills/' + this.state.year.sessionYear + "/search?term=%5C*voteType:'FLOOR'%20AND%20year:" + this.state.year.billYear + '&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&limit=1',
+      method: 'GET'
     })
-    .done(function(response) {
-      var billTotal = response.total;
-      var allBillz = [];
-      var billYear = parseInt(this.state.year.billYear);
+    .done(function (response) {
+      var billTotal = response.total
+      var allBillz = []
+      var billYear = parseInt(this.state.year.billYear)
       var sessionYear = parseInt(this.state.year.sessionYear)
-      for (var i = 1; i < Math.ceil(billTotal/100); i+=1) {
+      for (var i = 1; i < Math.ceil(billTotal / 100); i += 1) {
         let offset = i * 100
-        if ( i === 1) { allBillz.push($.get("http://legislation.nysenate.gov/api/3/bills/" + sessionYear +"/search?term=%5C*voteType:'FLOOR'%20AND%20year:" + billYear + "&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=" + i + "&limit=100&full=true"))
-      } else {
-        allBillz.push($.get("http://legislation.nysenate.gov/api/3/bills/" + sessionYear +"/search?term=%5C*voteType:'FLOOR'%20AND%20year:" + billYear + "&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=" + offset + "&limit=100&full=true"))
+        if (i === 1) {
+          allBillz.push($.get('http://legislation.nysenate.gov/api/3/bills/' + sessionYear + "/search?term=%5C*voteType:'FLOOR'%20AND%20year:" + billYear + '&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=' + i + '&limit=100&full=true'))
+        } else {
+          allBillz.push($.get('http://legislation.nysenate.gov/api/3/bills/' + sessionYear + "/search?term=%5C*voteType:'FLOOR'%20AND%20year:" + billYear + '&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=' + offset + '&limit=100&full=true'))
         }
       }
       let test = []
       Promise.all(allBillz).then(billGlobs => {
-        var allCleanBills = [];
+        var allCleanBills = []
         billGlobs.forEach(billGlob => {
-          var allBills = billGlob.result.items;
+          var allBills = billGlob.result.items
 
-          var nays = allBills.map(bill => bill.result.votes.items[bill.result.votes.items.length-1].memberVotes.items.NAY);
-          var naysArray = nays.map(function(votes) { if (votes === undefined) { return votes = {size: 0} } else { return votes } });
+          var nays = allBills.map(bill => bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.NAY)
+          var naysArray = nays.map(function (votes) { if (votes === undefined) { return votes = {size: 0} } else { return votes } })
 
-          var yays = allBills.map(bill => bill.result.votes.items[bill.result.votes.items.length-1].memberVotes.items.AYE);
-          var yaysArray = yays.map(function(votes) { if (votes === undefined) { return votes = {size: 0} } else { return votes } });
+          var yays = allBills.map(bill => bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE)
+          var yaysArray = yays.map(function (votes) { if (votes === undefined) { return votes = {size: 0} } else { return votes } })
 
           var senatorVotes = allBills.map(bill => {
-
-            if (bill.result.votes.items[bill.result.votes.items.length-1].memberVotes.items.AYE && bill.result.votes.items[bill.result.votes.items.length-1].memberVotes.items.AYE.items.filter(senator => senator.fullName === this.state.senatorInfo.fullName || senator.fullName === this.state.senatorInfo.firstLast || senator.fullName.split(' ')[senator.fullName.split(' ').length -1] === this.state.senatorInfo.short).length > 0) { return "yay" }
-            else if (bill.result.votes.items[bill.result.votes.items.length-1].memberVotes.items.NAY && bill.result.votes.items[bill.result.votes.items.length-1].memberVotes.items.NAY.items.filter(senator => senator.fullName === this.state.senatorInfo.fullName || senator.fullName === this.state.senatorInfo.firstLast || senator.fullName.split(' ')[senator.fullName.split(' ').length -1] === this.state.senatorInfo.short).length > 0) { return "nay" }
-            else { return "n/a" }
+            if (bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE && bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE.items.filter(senator => senator.fullName === this.state.senatorInfo.fullName || senator.fullName === this.state.senatorInfo.firstLast || senator.fullName.split(' ')[senator.fullName.split(' ').length - 1] === this.state.senatorInfo.short).length > 0) { return 'yay' } else if (bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.NAY && bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.NAY.items.filter(senator => senator.fullName === this.state.senatorInfo.fullName || senator.fullName === this.state.senatorInfo.firstLast || senator.fullName.split(' ')[senator.fullName.split(' ').length - 1] === this.state.senatorInfo.short).length > 0) { return 'nay' } else { return 'n/a' }
           })
 
           var billSponsors = allBills.map(bill => {
-            if (bill.result.sponsor.member !== null) { return bill.result.sponsor.member.fullName }
-            else { return "n/a" }
+            if (bill.result.sponsor.member !== null) { return bill.result.sponsor.member.fullName } else { return 'n/a' }
           })
 
           var cleanBills = allBills.map((bill, i) => {
             return {
-                    title: bill.result.title,
-                    year: bill.result.year,
-                    yay: yaysArray[i].size,
-                    nay: naysArray[i].size,
-                    senatorDecision: senatorVotes[i],
-                    summary: bill.result.summary.slice(0, (bill.result.title.length * 2)) + "...",
-                    status: bill.result.status.statusDesc,
-                    date: bill.result.status.actionDate,
-                    sponsor: billSponsors[i],
-                    session: bill.result.session,
-                    billId: bill.result.printNo
-                  }
-               });
-          allCleanBills =[...allCleanBills, ...cleanBills]
+              title: bill.result.title,
+              year: bill.result.year,
+              yay: yaysArray[i].size,
+              nay: naysArray[i].size,
+              senatorDecision: senatorVotes[i],
+              summary: bill.result.summary.slice(0, (bill.result.title.length * 2)) + '...',
+              status: bill.result.status.statusDesc,
+              date: bill.result.status.actionDate,
+              sponsor: billSponsors[i],
+              session: bill.result.session,
+              billId: bill.result.printNo
+            }
+          })
+          allCleanBills = [...allCleanBills, ...cleanBills]
         })
 
-          allCleanBills.sort(this.compare)
+        allCleanBills.sort(this.compare)
 
-          var closeVoteBills = allCleanBills.filter(bill => (Math.abs(bill.yay - bill.nay) < 20) && (bill.yay + bill.nay > 30))
+        var closeVoteBills = allCleanBills.filter(bill => (Math.abs(bill.yay - bill.nay) < 20) && (bill.yay + bill.nay > 30))
 
           // var closeVoteBills = [{
           //   title: "title 1",
@@ -294,31 +287,28 @@ class App extends React.Component {
 
           // ]
 
-          this.setState({showLoading: false, showForm: true, showLoadingLine: false});
-          this.setState({
-            currentBills: closeVoteBills
-          })
-          var billsStateVar = this.state.bills;
-          billsStateVar[this.state.year.billYear] = allCleanBills;
+        this.setState({showLoading: false, showForm: true, showLoadingLine: false})
+        this.setState({
+          currentBills: closeVoteBills
+        })
+        var billsStateVar = this.state.bills
+        billsStateVar[this.state.year.billYear] = allCleanBills
           // billsStateVar[this.state.year.billYear] = closeVoteBills;
-          $.fn.fullpage.moveSlideRight();
-          this.setState({
-            bills: billsStateVar
-          });
+        $.fn.fullpage.moveSlideRight()
+        this.setState({
+          bills: billsStateVar
+        })
       })
     }.bind(this))
   }
 
-
-
-
-  componentDidMount(){
+  componentDidMount () {
     $('#fullpage').fullpage({scrollOverflow: true, autoScrolling: false, fitToSection: false})
   }
 
-  closeBillsClicked() {
+  closeBillsClicked () {
     if (this.state.senatorInfo.fullName) {
-      var closeVoteBills = this.state.bills[this.state.year.billYear].filter(bill => (Math.abs(bill.yay - bill.nay) < 20) && (bill.yay + bill.nay > 30));
+      var closeVoteBills = this.state.bills[this.state.year.billYear].filter(bill => (Math.abs(bill.yay - bill.nay) < 20) && (bill.yay + bill.nay > 30))
 
       this.setState({
         currentBills: closeVoteBills,
@@ -327,13 +317,12 @@ class App extends React.Component {
         sponsoredClicked: false,
         keywordClicked: false
       })
-    }
-    else { return null }
+    } else { return null }
   }
 
-  sponsoredClicked() {
+  sponsoredClicked () {
     if (this.state.senatorInfo.fullName) {
-      var senatorSponsoredBills = this.state.bills[this.state.year.billYear].filter(bill => bill.sponsor === this.state.senatorInfo.firstLast || bill.sponsor === this.state.senatorInfo.fullName  || bill.sponsor.includes(this.state.senatorInfo.short));
+      var senatorSponsoredBills = this.state.bills[this.state.year.billYear].filter(bill => bill.sponsor === this.state.senatorInfo.firstLast || bill.sponsor === this.state.senatorInfo.fullName || bill.sponsor.includes(this.state.senatorInfo.short))
 
       this.setState({
         currentBills: senatorSponsoredBills,
@@ -342,113 +331,109 @@ class App extends React.Component {
         yearClicked: false,
         keywordClicked: false
       })
-    }
-    else { return null }
+    } else { return null }
   }
 
-  keywordSearch(event) {
-    event.preventDefault();
-    var searchTerm = this.refs.keywordBox.value;
-    var keywordSearchBills = this.state.bills[this.state.year.billYear].filter(bill => bill.summary.includes(searchTerm));
+  keywordSearch (event) {
+    event.preventDefault()
+    var searchTerm = this.refs.keywordBox.value
+    var keywordSearchBills = this.state.bills[this.state.year.billYear].filter(bill => bill.summary.includes(searchTerm))
     this.setState({
       currentBills: keywordSearchBills,
       showKeywordSearchForm: false
     })
   }
 
-  showKeywordForm() {
+  showKeywordForm () {
     if (this.state.senatorInfo.fullName) {
       this.setState({showKeywordSearchForm: true, keywordClicked: true, closeVoteClicked: false, sponsoredClicked: false, yearClicked: false})
-    }
-    else { return null }
+    } else { return null }
   }
 
-    render() {
-        if (this.state.closeVoteClicked) {
-            var closeVoteClickedClass = " clickedOn";
-        } else {
-            var closeVoteClickedClass = "";
-        }
+  render () {
+    if (this.state.closeVoteClicked) {
+      var closeVoteClickedClass = ' clickedOn'
+    } else {
+      var closeVoteClickedClass = ''
+    }
 
-        if (this.state.sponsoredClicked) {
-            var sponsoredClickedClass = " clickedOn";
-        } else {
-            var sponsoredClickedClass = "";
-        }
+    if (this.state.sponsoredClicked) {
+      var sponsoredClickedClass = ' clickedOn'
+    } else {
+      var sponsoredClickedClass = ''
+    }
 
-        if (this.state.yearClicked) {
-            var yearClickedClass = " clickedOn";
-        } else {
-            var yearClickedClass = "";
-        }
+    if (this.state.yearClicked) {
+      var yearClickedClass = ' clickedOn'
+    } else {
+      var yearClickedClass = ''
+    }
 
-        if (this.state.keywordClicked) {
-            var keywordClickedClass = " clickedOn";
-        } else {
-            var keywordClickedClass = "";
-        }
+    if (this.state.keywordClicked) {
+      var keywordClickedClass = ' clickedOn'
+    } else {
+      var keywordClickedClass = ''
+    }
 
-        if (this.state.showLoadingLine) {
-            var loadingText = "Fetching bill info...";
-        } else {
-            var loadingText = "";
-        }
+    if (this.state.showLoadingLine) {
+      var loadingText = 'Fetching bill info...'
+    } else {
+      var loadingText = ''
+    }
 
-      if (this.state.showKeywordSearchForm) {
-            var timelineFilters = <div className='row' id='keywordDiv'><form className='keyword-search' id='keyword-search-form' type='button' onSubmit={this.keywordSearch}><div className='keyword-search-box input-field col s9'><label htmlFor='keywordBox'>Search for bills by keyword</label><input ref='keywordBox' name='keywordBox' id='keywordBox' type='text'/></div><div className='col s3 waves-effect waves-light btn' id='supaDupaButton'><input type='submit' value='search'/></div></form></div>
-      } else {
-            var timelineFilters =
-            <ul className="row">
-                <li className="col s3">
-                    <a id="closeVoteButton" className={"waves-effect waves-light btn"+closeVoteClickedClass} onClick={this.closeBillsClicked}>close vote bills</a>
-                </li>
+    if (this.state.showKeywordSearchForm) {
+      var timelineFilters = <div className='row' id='keywordDiv'><form className='keyword-search' id='keyword-search-form' type='button' onSubmit={this.keywordSearch}><div className='keyword-search-box input-field col s9'><label htmlFor='keywordBox'>Search for bills by keyword</label><input ref='keywordBox' name='keywordBox' id='keywordBox' type='text' /></div><div className='col s3 waves-effect waves-light btn' id='supaDupaButton'><input type='submit' value='search' /></div></form></div>
+    } else {
+      var timelineFilters =
+        <ul className='row'>
+          <li className='col s3'>
+            <a id='closeVoteButton' className={'waves-effect waves-light btn' + closeVoteClickedClass} onClick={this.closeBillsClicked}>close vote bills</a>
+          </li>
 
-                <li className="col s3">
-                    <a className={"waves-effect waves-light btn"+sponsoredClickedClass} onClick={this.sponsoredClicked}>Sponsored bills</a>
-                </li>
+          <li className='col s3'>
+            <a className={'waves-effect waves-light btn' + sponsoredClickedClass} onClick={this.sponsoredClicked}>Sponsored bills</a>
+          </li>
 
-                <li className="col s3">
-                    <a className={"waves-effect waves-light btn"+keywordClickedClass} onClick={this.showKeywordForm}>Keyword Search</a>
-                </li>
+          <li className='col s3'>
+            <a className={'waves-effect waves-light btn' + keywordClickedClass} onClick={this.showKeywordForm}>Keyword Search</a>
+          </li>
 
-                <li id="year-search" className="input-field col s3">
-                    <select className={yearClickedClass} onChange={this.yearChange} value={this.state.year.billYear}>
-                        <option value="Choose your option" disabled></option>
-                        <option value="2009">2009</option>
-                        <option value="2010">2010</option>
-                        <option value="2011">2011</option>
-                        <option value="2012">2012</option>
-                        <option value="2013">2013</option>
-                        <option value="2014">2014</option>
-                        <option value="2015">2015</option>
-                        <option value="2016">2016</option>
-                    </select>
-                </li>
-            </ul>
+          <li id='year-search' className='input-field col s3'>
+            <select className={yearClickedClass} onChange={this.yearChange} value={this.state.year.billYear}>
+              <option value='Choose your option' disabled />
+              <option value='2009'>2009</option>
+              <option value='2010'>2010</option>
+              <option value='2011'>2011</option>
+              <option value='2012'>2012</option>
+              <option value='2013'>2013</option>
+              <option value='2014'>2014</option>
+              <option value='2015'>2015</option>
+              <option value='2016'>2016</option>
+            </select>
+          </li>
+        </ul>
+    }
 
-      }
-
-
-    return(
-      <div ref="test" id="fullpage">
-        <div className="section">
-          <div id="landingPageBG" className="slide">
-            <AddressForm hideIt={this.state.showForm} getAddress={this.geocodeIt}/> :
+    return (
+      <div ref='test' id='fullpage'>
+        <div className='section'>
+          <div id='landingPageBG' className='slide'>
+            <AddressForm hideIt={this.state.showForm} getAddress={this.geocodeIt} /> :
             {/* { this.state.showLoading ? <Loading /> : null } */}
-            <h2 id="loading-line">{loadingText}</h2>
-            <h1 id="main-font">STATE MATTERS</h1>
+            <h2 id='loading-line'>{loadingText}</h2>
+            <h1 id='main-font'>STATE MATTERS</h1>
           </div>
-          <div id="page2BG" className="slide">
+          <div id='page2BG' className='slide'>
 
-            <Timeline bills={this.state.currentBills} year={this.state.year} senatorInfo={this.state.senatorInfo} timelineFilters={timelineFilters} closeVoteClicked={this.state.closeVoteClicked}/>
+            <Timeline bills={this.state.currentBills} year={this.state.year} senatorInfo={this.state.senatorInfo} timelineFilters={timelineFilters} closeVoteClicked={this.state.closeVoteClicked} />
 
           </div>
-          <div className="fp-controlArrow fp-next"></div>
-          <div className="fp-controlArrow fp-next"></div>
+          <div className='fp-controlArrow fp-next' />
+          <div className='fp-controlArrow fp-next' />
         </div>
       </div>
     )
   }
 }
 
-export default App;
+export default App

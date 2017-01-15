@@ -1,34 +1,33 @@
-function setupListeners() {
-
-  'use strict';
+function setupListeners () {
+  'use strict'
 
   // define variables
-  var items = document.querySelectorAll(".timeline li");
+  var items = document.querySelectorAll('.timeline li')
 
   // check if an element is in viewport
   // http://stackoverflow.com/questions/123999/how-to-tell-if-a-dom-element-is-visible-in-the-current-viewport
-  function isElementInViewport(el) {
-    var rect = el.getBoundingClientRect();
+  function isElementInViewport (el) {
+    var rect = el.getBoundingClientRect()
     return (
       rect.top >= 0 &&
       rect.left >= 0 &&
       rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
       rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
+    )
   }
 
-  function toggleAppearance() {
+  function toggleAppearance () {
     // debugger;
     for (var i = 0; i < items.length; i++) {
-        if (isElementInViewport(items[i])) {
-            items[i].classList.add("in-view");
-        } else {
+      if (isElementInViewport(items[i])) {
+        items[i].classList.add('in-view')
+      } else {
             // items[i].classList.remove("in-view");
-        }
+      }
     }
   }
 
-  window.setInterval(toggleAppearance, 650);
+  window.setInterval(toggleAppearance, 650)
 }
 
-export default setupListeners;
+export default setupListeners

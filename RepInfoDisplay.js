@@ -1,39 +1,37 @@
-import React from 'react';
+import React from 'react'
 
 class RepInfoDisplay extends React.Component {
-  constructor() {
-    super();
+  constructor () {
+    super()
   }
 
-  render() {
+  render () {
     let {fullName, district, web} = this.props.repDisplay
-    if (!fullName) { var webInfo = null } else { var webInfo = fullName + "'s Website"}
+    if (!fullName) { var webInfo = null } else { var webInfo = fullName + "'s Website" }
     return (
 
+      <div className='materialize' id='rep-info'>
+        <ul id='repInfoUL' className='collection row'>
 
-        <div className="materialize" id="rep-info">
-            <ul id="repInfoUL" className="collection row">
-        
-              <li className="collection-item avatar col s4">
+          <li className='collection-item avatar col s4'>
 
-                <span className="title">Your State Senator</span>
-                <p>{fullName}</p>
-              </li>
-        
-              <li className="collection-item avatar col s4">
+            <span className='title'>Your State Senator</span>
+            <p>{fullName}</p>
+          </li>
 
-                <span className="title">District</span>
-                <p>{district}</p>
-              </li>
-        
-              <li className="collection-item avatar col s4">
+          <li className='collection-item avatar col s4'>
 
+            <span className='title'>District</span>
+            <p>{district}</p>
+          </li>
 
-                <p id="senatorLink"><a target="_blank" href={web}>{webInfo}</a></p>
-              </li>
-        
-            </ul>
-        </div>
+          <li className='collection-item avatar col s4'>
+
+            <p id='senatorLink'><a target='_blank' href={web}>{webInfo}</a></p>
+          </li>
+
+        </ul>
+      </div>
 
         // <div id="rep-info">
         //     <ul>
@@ -43,11 +41,9 @@ class RepInfoDisplay extends React.Component {
         //     </ul>
         // </div>
 
-
     )
   }
 
-
 }
 
-export default RepInfoDisplay;
+export default RepInfoDisplay
