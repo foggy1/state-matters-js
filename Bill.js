@@ -1,14 +1,11 @@
 import React from 'react'
 import setupListeners from './timeline_fcns.js'
 import $ from 'jquery'
+import Chart from 'chart.js'
 import {IScroll} from 'fullpage.js'
 import fullpage from 'fullpage.js'
 
 class Bill extends React.Component {
-
-  constructor () {
-    super()
-  }
 
   componentDidMount () {
     // $.fn.fullpage.reBuild();
