@@ -9,7 +9,7 @@ class Bill extends React.Component {
 
   renderChart () {
     const { yay, nay } = this.props.data
-    var data = {
+    const data = {
       labels: [
         'Yay',
         'Nay'
@@ -32,13 +32,17 @@ class Bill extends React.Component {
   }
 
   render () {
-    let {year, session, title, yay, nay, senatorDecision, summary, status, date, billId} = this.props.data
+    const {
+      session,
+      title,
+      senatorDecision,
+      status,
+      date,
+      billId
+    } = this.props.data
 
-    let {supaKey, othaSupaKey} = this.props
-    let othaOthaSupaKey = this.props.othaSupaKey + 1000
-    let realKey = othaOthaSupaKey + 1000
+    let {othaSupaKey} = this.props
 
-            // <p id={othaOthaSupaKey} ref='holder'><canvas ref='chart' id={realKey} /></p>
     return (
       <li id={othaSupaKey}>
         <div className='big-box'>
