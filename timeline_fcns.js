@@ -1,13 +1,11 @@
-function setupListeners () {
-  'use strict'
-
+export const setupListeners = () => {
   // define variables
-  var items = document.querySelectorAll('.timeline li')
+  const items = document.querySelectorAll('.timeline li')
 
   // check if an element is in viewport
   // http://stackoverflow.com/questions/123999/how-to-tell-if-a-dom-element-is-visible-in-the-current-viewport
-  function isElementInViewport (el) {
-    var rect = el.getBoundingClientRect()
+  const isElementInViewport = (el) => {
+    const rect = el.getBoundingClientRect()
     return (
       rect.top >= 0 &&
       rect.left >= 0 &&
@@ -16,18 +14,14 @@ function setupListeners () {
     )
   }
 
-  function toggleAppearance () {
-    // debugger;
-    for (var i = 0; i < items.length; i++) {
+  const toggleAppearance = () => {
+    let i
+    for (i = 0; i < items.length; i++) {
       if (isElementInViewport(items[i])) {
         items[i].classList.add('in-view')
-      } else {
-            // items[i].classList.remove("in-view");
       }
     }
   }
 
   window.setInterval(toggleAppearance, 650)
 }
-
-export default setupListeners
