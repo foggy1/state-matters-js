@@ -1,30 +1,18 @@
 import React from 'react'
 import Bill from './Bill.js'
 import $ from 'jquery'
-import jquery from 'jquery'
-import IScroll from 'fullpage.js'
 import fullpage from 'fullpage.js'
 import setupListeners from './timeline_fcns'
 import RepInfoDisplay from './RepInfoDisplay'
 
 class Timeline extends React.Component {
-
-  constructor () {
-    super()
-  }
-
   componentDidUpdate () {
     setupListeners()
     $.fn.fullpage.reBuild()
-
-    // debugger;
-    // if (this.props.closeVoteClicked) {
-    //
-    // }
   }
 
   render () {
-    let {bills, year} = this.props
+    const {bills, year} = this.props
 
     return (
       <div id='timelineboi'>
