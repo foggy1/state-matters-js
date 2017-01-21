@@ -1,13 +1,10 @@
 import React from 'react'
 
 class RepInfoDisplay extends React.Component {
-  constructor () {
-    super()
-  }
 
   render () {
-    let {fullName, district, web} = this.props.repDisplay
-    if (!fullName) { var webInfo = null } else { var webInfo = fullName + "'s Website" }
+    const { fullName, district, web } = this.props.repDisplay
+    const webInfo = fullName ? fullName + "'s Website" : null
     return (
 
       <div className='materialize' id='rep-info'>
@@ -32,15 +29,6 @@ class RepInfoDisplay extends React.Component {
 
         </ul>
       </div>
-
-        // <div id="rep-info">
-        //     <ul>
-        //       <li>Your Senator: {fullName}</li>
-        //       <li>Your District: {district}</li>
-        //       <li><a href={web}>Your Senator's Website</a></li>
-        //     </ul>
-        // </div>
-
     )
   }
 

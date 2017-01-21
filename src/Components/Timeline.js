@@ -2,7 +2,7 @@ import React from 'react'
 import Bill from './Bill.js'
 import $ from 'jquery'
 import fullpage from 'fullpage.js'
-import { setupListeners } from './timeline_fcns'
+import { setupListeners } from '../utils/timeline_fcns'
 import RepInfoDisplay from './RepInfoDisplay'
 
 class Timeline extends React.Component {
