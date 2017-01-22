@@ -35,12 +35,17 @@ class App extends React.Component {
   geocodeIt (fullAddress) {
     this.setState({showLoading: true, showForm: false, showLoadingLine: true})
     $.ajax({
-      url: 'https://www.googleapis.com/civicinfo/v2/representatives/?key=AIzaSyAiRgU_ysVxPfbMqVQnOEeN4-aLW4OMEw4&roles=legislatorUpperBody&address=' + fullAddress
+      url: `https://www.googleapis.com/civicinfo/v2/representatives/?key=AIzaSyAiRgU_ysVxPfbMqVQnOEeN4-aLW4OMEw4&roles=legislatorUpperBody&address=${fullAddress}`
     })
     .done(response => {
       const { name } = response.officials[2]
       const district = []
-      for (var key in response.divisions) { if (response.divisions[key].name.includes('New York State Senate district')) { district.push(response.divisions[key].name) } }
+      let key
+      for (key in response.divisions) {
+        if (response.divisions[key].name.includes('New York State Senate district')) {
+          district.push(response.divisions[key].name)
+        }
+      }
       const districtStr = district.toString()
       const districtNum = districtStr.slice(districtStr.length - 2, districtStr.length)
       const senatorFirstLastSplit = name.split(' ')
@@ -57,32 +62,6 @@ class App extends React.Component {
     })
   }
 
-  // getAssembly(latLng) {
-  //   $.ajax({
-  //     url: "https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20DISTRICT%2C%20REP_NAME%2C%20REP_URL%2C%20POPULATION%20%20%20FROM%2017nwTkaJDQ5AyfTtnX96SeBzRNZRekwKeonIZHvw%20%20WHERE%20geometry%20not%20equal%20to%20%27%27%20AND%20ST_INTERSECTS(geometry%2C%20CIRCLE(LATLNG(" + latLng + ")%2C1))&callback=MapsLib.displayListass&key=AIzaSyAHOjsb-JbuJn1lC6OzUNH-jlDT_KA_FwE&callback=jQuery1710929156077118652_1476403682128&_=1476403735798",
-  //     method: 'get'
-  //   })
-  //   .done(function(response) {
-  //   }).fail(function(response) {
-  //     var foundRep = response.responseText;
-  //     foundRep = $.parseJSON(foundRep.slice(39, -2));
-  //     foundRep = foundRep.rows[0];
-  //   });
-  // }
-
-  // getCongress(latLng) {
-  //   $.ajax({
-  //     url: "https://www.googleapis.com/fusiontables/v1/query?sql=SELECT%20DISTRICT%2C%20REP_NAME%2C%20REP_URL%2C%20POPULATION%20%20%20FROM%201GFWTwdhLbQ8yprvFNe-XNkrm1Ik-vPFFynaxg3g%20%20WHERE%20geometry%20not%20equal%20to%20%27%27%20AND%20ST_INTERSECTS(geometry%2C%20CIRCLE(LATLNG(" + latLng + ")%2C1))&callback=MapsLib.displayListcon&key=AIzaSyAHOjsb-JbuJn1lC6OzUNH-jlDT_KA_FwE&callback=jQuery17106865557795366708_1476457349225&_=1476457378114",
-  //     method: 'get'
-  //   })
-  //   .done(function(response) {
-  //   }).fail(function(response) {
-  //     var foundRep = response.responseText;
-  //     foundRep = $.parseJSON(foundRep.slice(39, -2));
-  //     foundRep = foundRep.rows[0];
-  //   });
-  // }
-
   senatorChange (chosenBillYear, chosenSessionYear) {
     if (!this.state.bills[chosenBillYear]) {
       $.fn.fullpage.moveSlideLeft()
@@ -91,7 +70,7 @@ class App extends React.Component {
 
     const { district } = this.state.senatorInfo
     $.ajax({
-      url: 'http://legislation.nysenate.gov/api/3/members/search?term=districtCode:' + district + " AND chamber:'SENATE' AND sessionYear:" + chosenSessionYear + '&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&full=true',
+      url: `http://legislation.nysenate.gov/api/3/members/search?term=districtCode:${district} AND chamber:'SENATE' AND sessionYear:${chosenSessionYear}&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&full=true`,
       method: 'GET'
     })
     .done(response => {
@@ -154,7 +133,7 @@ class App extends React.Component {
 
   getBillTotal () {
     $.ajax({
-      url: 'http://legislation.nysenate.gov/api/3/bills/' + this.state.year.sessionYear + "/search?term=%5C*voteType:'FLOOR'%20AND%20year:" + this.state.year.billYear + '&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&limit=1',
+      url: `http://legislation.nysenate.gov/api/3/bills/${this.state.year.sessionYear}/search?term=%5C*voteType:'FLOOR'%20AND%20year:${this.state.year.billYear}&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&limit=1`,
       method: 'GET'
     })
     .done(response => {
@@ -162,16 +141,17 @@ class App extends React.Component {
       const billPromises = []
       const billYear = parseInt(this.state.year.billYear)
       const sessionYear = parseInt(this.state.year.sessionYear)
-      for (var i = 1; i < Math.ceil(billTotal / 100); i += 1) {
+      let i
+      for (i = 1; i < Math.ceil(billTotal / 100); i += 1) {
         let offset = i * 100
         if (i === 1) {
-          billPromises.push($.get('http://legislation.nysenate.gov/api/3/bills/' + sessionYear + "/search?term=%5C*voteType:'FLOOR'%20AND%20year:" + billYear + '&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=' + i + '&limit=100&full=true'))
+          billPromises.push($.get(`http://legislation.nysenate.gov/api/3/bills/${sessionYear}/search?term=%5C*voteType:'FLOOR'%20AND%20year:${billYear}&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=${i}&limit=100&full=true`))
         } else {
-          billPromises.push($.get('http://legislation.nysenate.gov/api/3/bills/' + sessionYear + "/search?term=%5C*voteType:'FLOOR'%20AND%20year:" + billYear + '&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=' + offset + '&limit=100&full=true'))
+          billPromises.push($.get(`http://legislation.nysenate.gov/api/3/bills/${sessionYear}/search?term=%5C*voteType:'FLOOR'%20AND%20year:${billYear}&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=${offset}&limit=100&full=true`))
         }
       }
+      let allCleanBills = []
       Promise.all(billPromises).then(billGlobs => {
-        var allCleanBills = []
         billGlobs.forEach(billGlob => {
           const allBills = billGlob.result.items
 
@@ -182,9 +162,17 @@ class App extends React.Component {
           const yaysArray = yays.map(votes => votes ? votes : { size: 0 })
 
           const senatorVotes = allBills.map(bill => {
-            if (bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE && bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE.items.filter(senator => senator.fullName === this.state.senatorInfo.fullName || senator.fullName === this.state.senatorInfo.firstLast || senator.fullName.split(' ')[senator.fullName.split(' ').length - 1] === this.state.senatorInfo.short).length > 0) {
+            if (bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE &&
+              bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.AYE.items
+              .some(senator => senator.fullName === this.state.senatorInfo.fullName ||
+                senator.fullName === this.state.senatorInfo.firstLast ||
+                senator.fullName.split(' ')[senator.fullName.split(' ').length - 1] === this.state.senatorInfo.short)) {
               return 'yay'
-            } else if (bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.NAY && bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.NAY.items.filter(senator => senator.fullName === this.state.senatorInfo.fullName || senator.fullName === this.state.senatorInfo.firstLast || senator.fullName.split(' ')[senator.fullName.split(' ').length - 1] === this.state.senatorInfo.short).length > 0) {
+            } else if (bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.NAY &&
+              bill.result.votes.items[bill.result.votes.items.length - 1].memberVotes.items.NAY.items
+              .some(senator => senator.fullName === this.state.senatorInfo.fullName ||
+                senator.fullName === this.state.senatorInfo.firstLast ||
+                senator.fullName.split(' ')[senator.fullName.split(' ').length - 1] === this.state.senatorInfo.short)) {
               return 'nay'
             } else {
               return 'n/a'
@@ -255,7 +243,9 @@ class App extends React.Component {
 
   sponsoredClicked () {
     if (this.state.senatorInfo.fullName) {
-      const senatorSponsoredBills = this.state.bills[this.state.year.billYear].filter(bill => bill.sponsor === this.state.senatorInfo.firstLast || bill.sponsor === this.state.senatorInfo.fullName || bill.sponsor.includes(this.state.senatorInfo.short))
+      const senatorSponsoredBills = this.state.bills[this.state.year.billYear].filter(bill => bill.sponsor === this.state.senatorInfo.firstLast ||
+       bill.sponsor === this.state.senatorInfo.fullName ||
+       bill.sponsor.includes(this.state.senatorInfo.short))
 
       this.setState({
         currentBills: senatorSponsoredBills,
@@ -330,7 +320,6 @@ class App extends React.Component {
         <div className='section'>
           <div id='landingPageBG' className='slide'>
             <AddressForm hideIt={this.state.showForm} getAddress={this.geocodeIt} /> :
-            {/* { this.state.showLoading ? <Loading /> : null } */}
             <h2 id='loading-line'>{loadingText}</h2>
             <h1 id='main-font'>STATE MATTERS</h1>
           </div>
