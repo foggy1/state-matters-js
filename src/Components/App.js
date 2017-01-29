@@ -156,6 +156,7 @@ class App extends Component {
           } else {
             billPromises.push($.get(`http://legislation.nysenate.gov/api/3/bills/${sessionYear}/search?term=%5C*voteType:'FLOOR'%20AND%20year:${billYear}&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=${offset}&limit=100&full=true`))
           }
+        }
       }
       let allCleanBills = []
       Promise.all(billPromises).then(billGlobs => {
@@ -206,7 +207,11 @@ class App extends Component {
           allCleanBills = [...allCleanBills, ...cleanBills]
         })
 
-        allCleanBills.sort(this.compare)
+        allCleanBills.sort((a, b) => {
+          console.log(b.date)
+          console.log(getTime(b.date) - getTime(a.date))
+          return b.date - a.date
+        })
 
         const closeVoteBills = allCleanBills.filter(bill => (Math.abs(bill.yay - bill.nay) < 20) && (bill.yay + bill.nay > 30))
 
