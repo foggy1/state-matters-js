@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { Component } from 'react'
 import AddressForm from './AddressForm.js'
 import Timeline from './Timeline'
 import $ from 'jquery'
 
-class App extends React.Component {
+class App extends Component {
   constructor () {
     super()
     this.geocodeIt = this.geocodeIt.bind(this)
@@ -88,7 +88,11 @@ class App extends React.Component {
 
       if (this.state.senatorInfo.short !== lastName) {
         this.setState({
-          senatorInfo: { fullName: senatorName, district: districtCode, web: 'https://www.nysenate.gov/senators/' + formattedName }
+          senatorInfo: {
+            fullName: senatorName,
+            district: districtCode,
+            web: 'https://www.nysenate.gov/senators/' + formattedName
+          }
         })
       }
 
@@ -271,7 +275,13 @@ class App extends React.Component {
 
   showKeywordForm () {
     if (this.state.senatorInfo.fullName) {
-      this.setState({showKeywordSearchForm: true, keywordClicked: true, closeVoteClicked: false, sponsoredClicked: false, yearClicked: false})
+      this.setState({
+        showKeywordSearchForm: true,
+        keywordClicked: true,
+        closeVoteClicked: false,
+        sponsoredClicked: false,
+        yearClicked: false
+      })
     } else { return null }
   }
 

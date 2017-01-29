@@ -1,30 +1,30 @@
-import React from 'react'
+import React, { Component } from 'react'
 import Bill from './Bill.js'
 import $ from 'jquery'
 import fullpage from 'fullpage.js'
 import { setupListeners } from '../utils/timeline_fcns'
 import RepInfoDisplay from './RepInfoDisplay'
 
-class Timeline extends React.Component {
+class Timeline extends Component {
   componentDidUpdate () {
     setupListeners()
     $.fn.fullpage.reBuild()
   }
 
   render () {
-    const {bills, year} = this.props
+    const {bills, year, timelineFilters, senatorInfo} = this.props
 
     return (
       <div id='timelineboi'>
 
         <section className='intro'>
           <div className='container'>
-            <RepInfoDisplay repDisplay={this.props.senatorInfo} />
+            <RepInfoDisplay repDisplay={senatorInfo} />
 
             <h1 id='timeline-title'>{year.billYear} BILLS </h1>
 
             <div className='materialize' id='timeline-filterables'>
-              {this.props.timelineFilters}
+              {timelineFilters}
             </div>
           </div>
         </section>
@@ -35,7 +35,7 @@ class Timeline extends React.Component {
 
         <section className='timeline'>
           <ul id='timeline-ul'>
-            {bills.map((bill, idx) => <Bill data={bill} key={idx} supaKey={idx} othaSupaKey={idx + 1000} />)}
+            {bills.map((bill, idx) => <Bill {...bill} key={idx} othaSupaKey={idx + 1000} />)}
           </ul>
         </section>
       </div>
