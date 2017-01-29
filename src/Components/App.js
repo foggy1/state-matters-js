@@ -19,7 +19,7 @@ class App extends Component {
       senatorInfo: {},
       bills: {},
       currentBills: [],
-      year: { billYear: '2016', sessionYear: '2015' },
+      year: { billYear: '2017', sessionYear: '2017' },
       offset: '1',
       showLoading: false,
       showForm: true,
@@ -91,7 +91,7 @@ class App extends Component {
           senatorInfo: {
             fullName: senatorName,
             district: districtCode,
-            web: 'https://www.nysenate.gov/senators/' + formattedName
+            web: `https://www.nysenate.gov/senators/${formattedName}`
           }
         })
       }
@@ -146,13 +146,16 @@ class App extends Component {
       const billYear = parseInt(this.state.year.billYear)
       const sessionYear = parseInt(this.state.year.sessionYear)
       let i
-      for (i = 1; i < Math.ceil(billTotal / 100); i += 1) {
-        let offset = i * 100
-        if (i === 1) {
-          billPromises.push($.get(`http://legislation.nysenate.gov/api/3/bills/${sessionYear}/search?term=%5C*voteType:'FLOOR'%20AND%20year:${billYear}&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=${i}&limit=100&full=true`))
-        } else {
-          billPromises.push($.get(`http://legislation.nysenate.gov/api/3/bills/${sessionYear}/search?term=%5C*voteType:'FLOOR'%20AND%20year:${billYear}&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=${offset}&limit=100&full=true`))
-        }
+      if (billTotal < 100) {
+        billPromises << $.get(`http://legislation.nysenate.gov/api/3/bills/${sessionYear}/search?term=%5C*voteType:'FLOOR'%20AND%20year:${billYear}&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&limit=${billTotal + 1}&full=true`)
+      } else {
+        for (i = 1; i < Math.ceil(billTotal / 100); i += 1) {
+          let offset = i * 100
+          if (i === 1) {
+            billPromises.push($.get(`http://legislation.nysenate.gov/api/3/bills/${sessionYear}/search?term=%5C*voteType:'FLOOR'%20AND%20year:${billYear}&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=${i}&limit=100&full=true`))
+          } else {
+            billPromises.push($.get(`http://legislation.nysenate.gov/api/3/bills/${sessionYear}/search?term=%5C*voteType:'FLOOR'%20AND%20year:${billYear}&key=042A2V22xkhJDsvE22rtOmKKpznUpl9Y&offset=${offset}&limit=100&full=true`))
+          }
       }
       let allCleanBills = []
       Promise.all(billPromises).then(billGlobs => {
@@ -320,6 +323,7 @@ class App extends Component {
               <option value='2014'>2014</option>
               <option value='2015'>2015</option>
               <option value='2016'>2016</option>
+              <option value='2017'>2017</option>
             </select>
           </li>
         </ul>
