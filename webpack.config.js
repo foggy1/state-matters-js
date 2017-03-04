@@ -1,6 +1,6 @@
 var webpack = require('webpack')
 var config = {
-  entry: './main.js',
+  entry: './src/main.js',
 
   output: {
     path: __dirname,
