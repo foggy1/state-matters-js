@@ -207,11 +207,7 @@ class App extends Component {
           allCleanBills = [...allCleanBills, ...cleanBills]
         })
 
-        allCleanBills.sort((a, b) => {
-          console.log(b.date)
-          console.log(getTime(b.date) - getTime(a.date))
-          return b.date - a.date
-        })
+        allCleanBills.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
         const closeVoteBills = allCleanBills.filter(bill => (Math.abs(bill.yay - bill.nay) < 20) && (bill.yay + bill.nay > 30))
 
