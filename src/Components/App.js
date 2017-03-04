@@ -7,7 +7,6 @@ class App extends Component {
   constructor () {
     super()
     this.geocodeIt = this.geocodeIt.bind(this)
-    this.compare = this.compare.bind(this)
     this.getBillTotal = this.getBillTotal.bind(this)
     this.closeBillsClicked = this.closeBillsClicked.bind(this)
     this.sponsoredClicked = this.sponsoredClicked.bind(this)
@@ -123,16 +122,6 @@ class App extends Component {
     } else {
       return null
     }
-  }
-
-  compare (a, b) {
-    if (a.date < b.date) {
-      return 1
-    }
-    if (a.date > b.date) {
-      return -1
-    }
-    return 0
   }
 
   getBillTotal () {
