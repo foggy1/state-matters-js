@@ -27,7 +27,8 @@ class App extends Component {
       sponsoredClicked: false,
       yearClicked: false,
       keywordClicked: false,
-      showLoadingLine: false
+      showLoadingLine: false,
+      fetched: false
     }
   }
 
@@ -130,7 +131,7 @@ class App extends Component {
     })
     .done(response => {
       const billTotal = response.total
-      const billPromises = []
+      let billPromises = []
       const billYear = parseInt(this.state.year.billYear)
       const sessionYear = parseInt(this.state.year.sessionYear)
       let i
@@ -210,7 +211,8 @@ class App extends Component {
         const billsStateVar = this.state.bills
         billsStateVar[this.state.year.billYear] = allCleanBills
         this.setState({
-          bills: billsStateVar
+          bills: billsStateVar,
+          fetched: true
         })
       })
     })
@@ -318,18 +320,21 @@ class App extends Component {
     return (
       <div ref='test'>
         <div className='section'>
+        {!this.state.fetched ? (
           <div id='landingPageBG' className='slide'>
             <AddressForm hideIt={this.state.showForm} getAddress={this.geocodeIt} /> :
             <h2 id='loading-line'>{loadingText}</h2>
             <h1 id='main-font'>STATE MATTERS</h1>
           </div>
+        ) : (
           <div id='page2BG' className='slide'>
 
             <Timeline bills={this.state.currentBills} year={this.state.year} senatorInfo={this.state.senatorInfo} timelineFilters={timelineFilters} closeVoteClicked={this.state.closeVoteClicked} />
 
           </div>
-          <div className='fp-controlArrow fp-next' />
-          <div className='fp-controlArrow fp-next' />
+        )}
+          
+          
         </div>
       </div>
     )

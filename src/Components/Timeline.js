@@ -1,14 +1,12 @@
 import React, { Component } from 'react'
 import Bill from './Bill.js'
 import $ from 'jquery'
-import fullpage from 'fullpage.js'
 import { setupListeners } from '../utils/timeline_fcns'
 import RepInfoDisplay from './RepInfoDisplay'
 
 class Timeline extends Component {
   componentDidUpdate () {
     setupListeners()
-    $.fn.fullpage.reBuild()
   }
 
   render () {
