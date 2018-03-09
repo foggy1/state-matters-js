@@ -63,7 +63,6 @@ class App extends Component {
 
   senatorChange (chosenBillYear, chosenSessionYear) {
     if (!this.state.bills[chosenBillYear]) {
-      $.fn.fullpage.moveSlideLeft()
       this.setState({showLoading: true, showForm: false})
     }
 
@@ -210,7 +209,6 @@ class App extends Component {
         })
         const billsStateVar = this.state.bills
         billsStateVar[this.state.year.billYear] = allCleanBills
-        $.fn.fullpage.moveSlideRight()
         this.setState({
           bills: billsStateVar
         })
@@ -218,9 +216,6 @@ class App extends Component {
     })
   }
 
-  componentDidMount () {
-    $('#fullpage').fullpage({scrollOverflow: true, autoScrolling: false, fitToSection: false})
-  }
 
   closeBillsClicked () {
     if (this.state.senatorInfo.fullName) {
@@ -321,7 +316,7 @@ class App extends Component {
     }
 
     return (
-      <div ref='test' id='fullpage'>
+      <div ref='test'>
         <div className='section'>
           <div id='landingPageBG' className='slide'>
             <AddressForm hideIt={this.state.showForm} getAddress={this.geocodeIt} /> :
